@@ -18,8 +18,14 @@ def main():
     env = visual_studio_environment()
     add_python_path_to(env)
     add_python_build_config_to(env)
+
     clean(env)
     build(env)
+
+    if args.gvim:
+        add_gui_to_build_env(env)
+        clean(env)
+        build(env)
 
     ensure_bin_dir()
     copy_binaries()
@@ -72,8 +78,6 @@ def visual_studio_environment():
     return dict(line.split('=') for line in res.split('\r\n') if '=' in line)
 
 def add_python_build_config_to(env):
-    # env['GUI'] = 'yes'
-    # env['DIRECTX'] = 'yes'
     env['CPUNR'] = 'i686'
     env['CPU'] = 'AMD64'
     env['FEATURES'] = 'huge'
@@ -82,6 +86,11 @@ def add_python_build_config_to(env):
     env['DYNAMIC_PYTHON3'] = 'yes'
     env['PYTHON3'] = r'C:\Python34'
     env['PYTHON3_VER'] = '34'
+
+
+def add_gui_to_build_env(env):
+    env['GUI'] = 'yes'
+    env['DIRECTX'] = 'yes'
 
 
 def add_python_path_to(env):
@@ -154,6 +163,9 @@ def _parse_args():
 
     p.add_argument('--pull', '-p', action='store_true', default=False,
                    help='pull the latest changes from the vim repo')
+
+    p.add_argument('--gvim', '-g', action='store_true', default=True,
+                   help='Build gvim as well')
 
     return p.parse_args()
 
